@@ -1,6 +1,6 @@
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getEvidencias } from "@/lib/data/evidencias";
-import { EvidenciasGallery } from "./EvidenciasGallery";
+import { EvidenciasGallery } from "@/components/modulos/evidencias/EvidenciasGallery";
 
 /** // IMPACTO: las 6 evidencias más recientes; clic abre la galería. */
 export async function ImpactoSection() {

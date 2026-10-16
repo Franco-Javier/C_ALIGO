@@ -136,6 +136,7 @@ c-aligo/
 │   ├── materiales/page.tsx
 │   ├── herramientas/page.tsx
 │   ├── noticias/page.tsx
+│   ├── impacto/page.tsx          # Todas las evidencias (público)
 │   ├── miembros/page.tsx
 │   ├── perfil/[usuario]/page.tsx
 │   ├── perfil/editar/page.tsx
@@ -158,7 +159,7 @@ c-aligo/
 
 | Ruta | Visitante | Pendiente | Miembro (activo/inactivo) | Directiva |
 |---|---|---|---|---|
-| `/`, `/eventos`, `/proyectos`, `/herramientas`, `/noticias`, `/miembros`, `/perfil/[usuario]` | ✅ | ✅ | ✅ | ✅ |
+| `/`, `/impacto`, `/eventos`, `/proyectos`, `/herramientas`, `/noticias`, `/miembros`, `/perfil/[usuario]` | ✅ | ✅ | ✅ | ✅ |
 | `/login` | ✅ | ↪ `/puzzle` | ↪ `/` | ↪ `/` |
 | `/puzzle` | ↪ `/login` | ✅ | ↪ `/` | ↪ `/` |
 | `/foros/*`, `/materiales`, `/perfil/editar` | ↪ `/login` | ↪ `/puzzle` | ✅ | ✅ |
@@ -188,7 +189,7 @@ c-aligo/
 
 ### Móvil
 - Navbar superior con el logo y el avatar.
-- **Barra inferior fija** con 5 íconos: Inicio, Eventos, Proyectos, Foros y Más. "Más" abre un menú con Materiales, Herramientas, Noticias, Miembros y Admin.
+- **Barra inferior fija** con 5 íconos: Inicio, Eventos, Proyectos, Foros y Más. "Más" abre un menú con Materiales, Herramientas, Noticias, Miembros, Impacto y Admin. (Impacto no va en el navbar de escritorio; ahí se llega desde el Inicio.)
 
 ### Menú del avatar
 Mi perfil · Editar perfil · Panel admin (solo directiva) · Cerrar sesión.
@@ -227,6 +228,7 @@ Tipos de referencia: ver `supabase/schema.sql`.
 ```
 - **Lee:** `evidencias` (las 6 más recientes por `fecha`), `eventos` (`fecha_inicio >= now()`, 3), `proyectos` (`estado = 'en_progreso'`), `noticias` (5), y conteos de `perfiles` (estado ≠ pendiente), `proyectos` y `eventos`.
 - Al hacer clic en una evidencia se abre un **modal tipo galería** con todas las `fotos[]` y la descripción.
+- "Ver todo →" de Impacto lleva a `/impacto` (§7.14).
 - El botón "Únete" lleva a `/login`.
 
 ### 7.2 Login `/login`
@@ -419,6 +421,21 @@ Cada sección es una **tabla + botón "Nuevo" + modal de formulario** (crear y e
 | Foros | `foros` | Crear foros y subforos, fijar hilos |
 | Herramientas | `herramientas` | CRUD simple |
 
+### 7.14 Impacto `/impacto` (público)
+```
+>_ Impacto
+Filtros: [Todos] [Workshop] [Charla] [Hackathon] [Gira] [Stand]
+┌────────┐ ┌────────┐ ┌────────┐
+│ foto   │ │ foto   │ │ foto   │   (grid 3 col / 1 col móvil)
+│ título │ │ título │ │ título │
+│ fecha  │ │ fecha  │ │ fecha  │
+└────────┘ └────────┘ └────────┘
+```
+- **Lee:** todas las `evidencias`, ordenadas por `fecha desc`.
+- Filtro opcional por el **tipo del evento vinculado** (`?tipo=hackathon` → `evidencias.evento_id` → `eventos.tipo`). Las evidencias sin evento solo aparecen en "Todos".
+- Reutiliza las tarjetas y el modal de galería del Inicio (`components/modulos/evidencias/`).
+- Se accede desde "Ver todo →" del Inicio y desde el menú "Más" en móvil.
+
 ---
 
 ## 8. Conexión con Supabase
@@ -473,6 +490,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Mocks:** los usuarios de GitHub de María e Isacar son inventados; se reemplazan con los reales en la Fase 2.
 - **Breakpoint:** la navegación de escritorio aparece desde `lg` (1024px); por debajo se usa la barra inferior.
 - **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
+- **Hero:** usar el logo final grande a la derecha en escritorio cuando esté listo.
 
 **Trabaja una fase a la vez.** Al terminar cada una:
 1. `npm run build` sin errores.

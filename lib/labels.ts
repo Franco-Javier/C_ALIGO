@@ -42,6 +42,14 @@ export const TIPO_EVENTO_LABEL: Record<TipoEvento, string> = {
   reunion: "Reunión",
 };
 
+/** Tipos que aparecen en los filtros públicos (las reuniones son internas). */
+export const TIPOS_EVENTO_FILTRO: TipoEvento[] = ["workshop", "charla", "hackathon", "gira", "stand"];
+
+/** Valida un ?tipo= de la URL contra los tipos filtrables. */
+export function parseTipoEvento(value: unknown): TipoEvento | undefined {
+  return TIPOS_EVENTO_FILTRO.find((tipo) => tipo === value);
+}
+
 export const TIPO_MATERIAL_LABEL: Record<TipoMaterial, string> = {
   link: "Link",
   documento: "Documento",

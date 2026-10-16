@@ -1,5 +1,6 @@
 import {
   Calendar,
+  Camera,
   FolderGit2,
   Home,
   Library,
@@ -24,6 +25,9 @@ const ITEMS = {
   miembros: { href: "/miembros", label: "Miembros", icon: Users },
 } satisfies Record<string, NavItem>;
 
+/** Solo en el menú "Más" móvil; en escritorio se llega desde el Inicio. */
+const IMPACTO_ITEM: NavItem = { href: "/impacto", label: "Impacto", icon: Camera };
+
 export const ADMIN_ITEM: NavItem = { href: "/admin", label: "Admin", icon: ShieldCheck };
 
 /** Navbar de escritorio. */
@@ -33,7 +37,13 @@ export const DESKTOP_NAV: NavItem[] = Object.values(ITEMS);
 export const MOBILE_PRIMARY: NavItem[] = [ITEMS.inicio, ITEMS.eventos, ITEMS.proyectos, ITEMS.foros];
 
 /** Menú "Más" en móvil; Admin se agrega solo para la directiva. */
-export const MOBILE_MORE: NavItem[] = [ITEMS.materiales, ITEMS.herramientas, ITEMS.noticias, ITEMS.miembros];
+export const MOBILE_MORE: NavItem[] = [
+  ITEMS.materiales,
+  ITEMS.herramientas,
+  ITEMS.noticias,
+  ITEMS.miembros,
+  IMPACTO_ITEM,
+];
 
 export function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);

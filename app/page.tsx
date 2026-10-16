@@ -39,7 +39,7 @@ export default function Home() {
       </div>
 
       <section>
-        <SectionTitle>Impacto</SectionTitle>
+        <SectionTitle action={<SeeAll href="/impacto">Ver todo →</SeeAll>}>Impacto</SectionTitle>
         <Suspense fallback={<CardsFallback />}>
           <ImpactoSection />
         </Suspense>

@@ -1,8 +1,11 @@
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
 /** Bloque gris animado para loading.tsx. Dale forma con className (h-*, w-*, rounded-*). */
-export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("animate-pulse rounded-lg bg-surface-2", className)} />;
+export function Skeleton({ className, style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <div aria-hidden style={style} className={cn("animate-pulse rounded-lg bg-surface-2", className)} />
+  );
 }
 
 /** Tarjeta genérica de carga: imagen + título + dos líneas. */
