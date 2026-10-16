@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#141414"/>
+  <g stroke="#2A2A2A" stroke-width="1">
+    <path d="M0 90H800M0 180H800M0 270H800M0 360H800M160 0V450M320 0V450M480 0V450M640 0V450"/>
+  </g>
+  <rect x="1" y="1" width="798" height="448" fill="none" stroke="#82D173" stroke-opacity="0.35" stroke-width="2"/>
+  <text x="400" y="235" fill="#82D173" font-family="monospace" font-size="40" text-anchor="middle">&gt;_ Stand</text>
+  <text x="400" y="285" fill="#9A9A9A" font-family="monospace" font-size="20" text-anchor="middle">// imagen de ejemplo</text>
+</svg>

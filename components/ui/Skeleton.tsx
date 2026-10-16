@@ -1,0 +1,18 @@
+import { cn } from "@/lib/utils";
+
+/** Bloque gris animado para loading.tsx. Dale forma con className (h-*, w-*, rounded-*). */
+export function Skeleton({ className }: { className?: string }) {
+  return <div aria-hidden className={cn("animate-pulse rounded-lg bg-surface-2", className)} />;
+}
+
+/** Tarjeta genérica de carga: imagen + título + dos líneas. */
+export function SkeletonCard({ withImage = true }: { withImage?: boolean }) {
+  return (
+    <div aria-hidden className="rounded-xl border border-border bg-surface p-4">
+      {withImage && <Skeleton className="mb-4 aspect-video w-full" />}
+      <Skeleton className="mb-3 h-5 w-2/3" />
+      <Skeleton className="mb-2 h-3 w-full" />
+      <Skeleton className="h-3 w-4/5" />
+    </div>
+  );
+}

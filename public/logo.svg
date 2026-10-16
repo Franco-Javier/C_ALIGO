@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Placeholder del logo (lobo/zorro). Reemplazar por el oficial del equipo. -->
+  <rect width="64" height="64" rx="14" fill="#0A0A0A"/>
+  <path d="M12 14 L24 26 L40 26 L52 14 L50 36 L32 54 L14 36 Z" fill="#82D173"/>
+  <path d="M24 26 L32 34 L40 26 Z" fill="#F5F5F5"/>
+  <path d="M20 34 L27 37 L24 40 Z M44 34 L37 37 L40 40 Z" fill="#0A0A0A"/>
+  <path d="M28 46 L32 50 L36 46 Z" fill="#0A0A0A"/>
+</svg>

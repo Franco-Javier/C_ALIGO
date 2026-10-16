@@ -465,7 +465,14 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 | **1 (MVP)** | Inicio, Eventos, Proyectos (sin GitHub), Herramientas, Miembros, Perfil público |
 | **2** | Conexión real a Supabase, login con GitHub, callback, puzzle, middleware, editar perfil, panel admin (eventos, evidencias, proyectos, miembros) |
 | **3** | Foros con realtime, Materiales con Storage, integración con GitHub API, badges |
-| **4** | Noticias con cron, job de inactividad, Presence en foros, pulido y SEO |
+| **4** | Noticias con cron, job de inactividad, Presence en foros, notificaciones (campana 🔔 del navbar), pulido y SEO |
+
+### Pendientes y decisiones
+- **Notificaciones (Fase 4):** la campana 🔔 del navbar está oculta. Falta definir qué notifica y proponer su tabla (`ALTER TABLE` / `create table`) antes de construirla.
+- **Redes sociales:** `lib/site.ts` tiene URLs placeholder; la comunidad aún no tiene Instagram ni organización de GitHub.
+- **Mocks:** los usuarios de GitHub de María e Isacar son inventados; se reemplazan con los reales en la Fase 2.
+- **Breakpoint:** la navegación de escritorio aparece desde `lg` (1024px); por debajo se usa la barra inferior.
+- **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
 
 **Trabaja una fase a la vez.** Al terminar cada una:
 1. `npm run build` sin errores.
