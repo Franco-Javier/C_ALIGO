@@ -6,13 +6,17 @@ export function cn(...inputs: ClassValue[]) {
 
 const TIME_ZONE = "America/Panama";
 
-/** "24 oct 2026" */
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/** "24 oct 2026". Acepta timestamptz o columnas `date` ("2026-09-18"). */
 export function formatDate(value: string | Date) {
+  // Una columna `date` no tiene zona: se formatea en UTC para no correrla un día.
+  const dateOnly = typeof value === "string" && DATE_ONLY.test(value);
   return new Intl.DateTimeFormat("es-PA", {
     day: "numeric",
     month: "short",
     year: "numeric",
-    timeZone: TIME_ZONE,
+    timeZone: dateOnly ? "UTC" : TIME_ZONE,
   }).format(new Date(value));
 }
 

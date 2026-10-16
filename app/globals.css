@@ -66,6 +66,21 @@ h4 {
   color: #000;
 }
 
+/* Cursor de terminal del hero */
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.cursor-blink {
+  animation: cursor-blink 1.1s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor-blink {
+    animation: none;
+  }
+}
+
 /* Fondo del <dialog> nativo (components/ui/Modal) */
 dialog::backdrop {
   background: rgb(0 0 0 / 0.7);

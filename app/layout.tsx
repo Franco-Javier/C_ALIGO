@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Navbar } from "@/components/layout/Navbar";
+import { ToastProvider } from "@/components/ui/Toast";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -27,12 +28,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       {/* pb-16: espacio para la barra inferior fija en móvil */}
       <body className="flex min-h-full flex-col pb-16 lg:pb-0">
-        <Navbar />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
-          {children}
-        </main>
-        <Footer />
-        <MobileNav />
+        <ToastProvider>
+          <Navbar />
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+            {children}
+          </main>
+          <Footer />
+          <MobileNav />
+        </ToastProvider>
       </body>
     </html>
   );

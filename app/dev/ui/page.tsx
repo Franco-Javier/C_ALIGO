@@ -7,6 +7,7 @@ import { DemoSection } from "./_components/DemoSection";
 import { FormsDemo } from "./_components/FormsDemo";
 import { ModalDemo } from "./_components/ModalDemo";
 import { PrimitivesDemo } from "./_components/PrimitivesDemo";
+import { ToastDemo } from "./_components/ToastDemo";
 import { TokensDemo } from "./_components/TokensDemo";
 
 // Página TEMPORAL de la Fase 0 para revisar los componentes. Borrar antes de producción.
@@ -34,6 +35,10 @@ export default function DevUiPage() {
 
       <DemoSection title="Modal">
         <ModalDemo />
+      </DemoSection>
+
+      <DemoSection title="Toast">
+        <ToastDemo />
       </DemoSection>
 
       <DemoSection title="Datos (lib/data → mock)">
