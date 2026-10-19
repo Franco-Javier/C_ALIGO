@@ -30,3 +30,17 @@ export async function getMateriales(filter: MaterialesFilter = {}): Promise<Mate
   throwIfError(error, "getMateriales");
   return data ?? [];
 }
+
+/** Temas distintos que ya existen, para el filtro "Tema". */
+export async function getTemasMateriales(): Promise<string[]> {
+  let temas: (string | null)[];
+  if (isMockMode) {
+    temas = MOCK_MATERIALES.map((m) => m.tema);
+  } else {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from("materiales").select("tema");
+    throwIfError(error, "getTemasMateriales");
+    temas = (data ?? []).map((m) => m.tema);
+  }
+  return [...new Set(temas.filter((t): t is string => !!t))].sort((a, b) => a.localeCompare(b, "es"));
+}
