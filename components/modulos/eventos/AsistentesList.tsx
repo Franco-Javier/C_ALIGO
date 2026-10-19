@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { PerfilResumen } from "@/types/database";
-import { Avatar } from "@/components/ui/Avatar";
+import { PerfilLink } from "@/components/modulos/perfil/PerfilLink";
 import type { Viewer } from "@/lib/labels";
 
 type AsistentesListProps = { asistentes: PerfilResumen[]; viewer: Viewer; proximo: boolean };
@@ -40,33 +40,11 @@ export function AsistentesList({ asistentes, viewer, proximo }: AsistentesListPr
 
   return (
     <ul className="flex flex-col gap-2">
-      {asistentes.map((p) => {
-        const content = (
-          <>
-            <Avatar name={p.nombre} src={p.avatar_url} size="sm" />
-            <span className="min-w-0">
-              <span className="block truncate text-sm">{p.nombre}</span>
-              {p.usuario_github && (
-                <span className="block truncate font-mono text-xs text-primary">@{p.usuario_github}</span>
-              )}
-            </span>
-          </>
-        );
-        return (
-          <li key={p.id}>
-            {p.usuario_github ? (
-              <Link
-                href={`/perfil/${p.usuario_github}`}
-                className="flex items-center gap-3 rounded-lg p-1.5 transition hover:bg-surface-2"
-              >
-                {content}
-              </Link>
-            ) : (
-              <div className="flex items-center gap-3 p-1.5">{content}</div>
-            )}
-          </li>
-        );
-      })}
+      {asistentes.map((p) => (
+        <li key={p.id}>
+          <PerfilLink perfil={p} />
+        </li>
+      ))}
     </ul>
   );
 }

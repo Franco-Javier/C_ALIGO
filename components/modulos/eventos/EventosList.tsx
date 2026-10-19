@@ -1,8 +1,7 @@
 import { connection } from "next/server";
-import { Plus } from "lucide-react";
 import type { TipoEvento } from "@/types/database";
-import { ButtonLink } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { NewButton } from "@/components/ui/NewButton";
 import { getAsistenciasDePerfil, getEventos } from "@/lib/data/eventos";
 import { getCurrentUser } from "@/lib/data/session";
 import { TIPO_EVENTO_LABEL, isDirectiva, puedeVerReuniones, viewerOf } from "@/lib/labels";
@@ -24,11 +23,7 @@ export async function EventosList({ tipo, cuando }: { tipo?: TipoEvento; cuando:
       <EmptyState
         message={`Aún no hay eventos ${cuando === "proximos" ? "próximos" : "pasados"}${tipoTexto}`}
         action={
-          isDirectiva(user?.rol) && (
-            <ButtonLink href="/admin/eventos" size="sm">
-              <Plus className="size-4" aria-hidden /> Nuevo evento
-            </ButtonLink>
-          )
+          isDirectiva(user?.rol) && <NewButton href="/admin/eventos">Nuevo evento</NewButton>
         }
       />
     );

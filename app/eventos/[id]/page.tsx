@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { ArrowLeft } from "lucide-react";
 import { AsistenciaControl } from "@/components/modulos/eventos/AsistenciaControl";
 import { AsistentesList } from "@/components/modulos/eventos/AsistentesList";
 import { EventoHeader } from "@/components/modulos/eventos/EventoHeader";
 import { EvidenciasGallery } from "@/components/modulos/evidencias/EvidenciasGallery";
+import { BackLink } from "@/components/ui/BackLink";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -90,12 +89,7 @@ async function EventoDetalle({ params }: PageProps<"/eventos/[id]">) {
 export default function EventoPage(props: PageProps<"/eventos/[id]">) {
   return (
     <div>
-      <Link
-        href="/eventos"
-        className="mb-6 inline-flex items-center gap-1.5 rounded font-mono text-xs text-text-muted transition hover:text-primary"
-      >
-        <ArrowLeft className="size-3.5" aria-hidden /> eventos
-      </Link>
+      <BackLink href="/eventos">eventos</BackLink>
       <Suspense fallback={<EventoDetalleSkeleton />}>
         <EventoDetalle {...props} />
       </Suspense>
