@@ -80,3 +80,26 @@ export async function getHiloById(id: string): Promise<HiloConAutor | null> {
   throwIfError(error, "getHiloById");
   return data?.[0] ?? null;
 }
+
+/** Todos los hilos (panel admin, para fijarlos), fijados primero. */
+export async function getHilosAdmin(): Promise<HiloConAutor[]> {
+  if (isMockMode) {
+    return [...MOCK_HILOS]
+      .sort(
+        (a, b) =>
+          Number(b.fijado) - Number(a.fijado) ||
+          (b.creado_en ?? "").localeCompare(a.creado_en ?? ""),
+      )
+      .map((h) => ({ ...h, autor: mockPerfilResumen(h.autor_id) }));
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("hilos")
+    .select(`*, autor:perfiles(${PERFIL_RESUMEN})`)
+    .order("fijado", { ascending: false })
+    .order("creado_en", { ascending: false })
+    .overrideTypes<HiloConAutor[], { merge: false }>();
+  throwIfError(error, "getHilosAdmin");
+  return data ?? [];
+}
