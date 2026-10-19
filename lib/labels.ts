@@ -55,6 +55,11 @@ export function parseTipoEvento(value: unknown, conReuniones = false): TipoEvent
   return tiposEventoFiltro(conReuniones).find((tipo) => tipo === value);
 }
 
+/** Valida un valor de la URL contra las claves de un diccionario de etiquetas. */
+export function parseEnum<T extends string>(labels: Record<T, string>, value: unknown): T | undefined {
+  return (Object.keys(labels) as T[]).find((key) => key === value);
+}
+
 export const TIPO_MATERIAL_LABEL: Record<TipoMaterial, string> = {
   link: "Link",
   documento: "Documento",
