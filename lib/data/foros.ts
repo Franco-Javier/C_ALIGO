@@ -55,3 +55,28 @@ export async function getMensajes(hiloId: string): Promise<MensajeConAutor[]> {
   throwIfError(error, "getMensajes");
   return data ?? [];
 }
+
+export async function getForoById(id: string): Promise<Foro | null> {
+  if (isMockMode) return MOCK_FOROS.find((f) => f.id === id) ?? null;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("foros").select("*").eq("id", id).maybeSingle();
+  throwIfError(error, "getForoById");
+  return data;
+}
+
+export async function getHiloById(id: string): Promise<HiloConAutor | null> {
+  if (isMockMode) {
+    const hilo = MOCK_HILOS.find((h) => h.id === id);
+    return hilo ? { ...hilo, autor: mockPerfilResumen(hilo.autor_id) } : null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("hilos")
+    .select(`*, autor:perfiles(${PERFIL_RESUMEN})`)
+    .eq("id", id)
+    .overrideTypes<HiloConAutor[], { merge: false }>();
+  throwIfError(error, "getHiloById");
+  return data?.[0] ?? null;
+}

@@ -502,6 +502,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Decisión (revisar) · Datos mock compartidos:** los arrays de `lib/mock` viven en `globalThis` (`lib/mock/store.ts`), porque los Route Handlers y las páginas usan bundles distintos y no verían las mutaciones de los otros. Se pierden al reiniciar el servidor.
 - **Decisión (revisar) · Puzzle:** la respuesta se compara sin espacios, comas, corchetes ni comillas ("0, 2, 4" = "024"). En modo mock, si `PUZZLE_RESPUESTA` está vacía se usa `"0 2 4"` (`lib/mock/puzzle.ts`). Si es correcta, se va a `/perfil/editar?bienvenida=1`.
 - **Integración (Fase 2) · Acceso:** las redirecciones del §5 se hacen hoy en cada página con `lib/auth/guards.ts`. Como corren dentro de `<Suspense>`, la redirección llega por streaming con código 200. Falta el `proxy.ts` (antes `middleware.ts`), que además debe refrescar la sesión de Supabase. El 403 de `/admin` usa `forbidden()`, que requiere `experimental.authInterrupts`.
+- **Decisión (revisar) · Foros:** en escritorio son 2 columnas (foros + contenido); la columna "En línea" se agrega con Presence. `/foros` muestra los foros como tarjetas, que en móvil hacen de primera pantalla. Un hilo nuevo se crea con título + primer mensaje. Enter envía y Shift+Enter hace salto de línea. Sin realtime: los mensajes de otros aparecen al recargar.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:
