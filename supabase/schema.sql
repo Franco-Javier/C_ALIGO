@@ -277,6 +277,7 @@ create policy "directiva proyecto_miembros" on proyecto_miembros for all using (
 create policy "directiva badges" on badges for all using (es_directiva());
 create policy "directiva perfil_badges" on perfil_badges for all using (es_directiva());
 create policy "directiva foros" on foros for all using (es_directiva());
+create policy "directiva fija hilos" on hilos for update using (es_directiva());
 create policy "directiva herramientas" on herramientas for all using (es_directiva());
 create policy "directiva modera mensajes" on mensajes for delete using (es_directiva() or autor_id = auth.uid());
 
