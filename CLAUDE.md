@@ -495,6 +495,9 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Hero:** usar el logo final grande a la derecha en escritorio cuando esté listo.
 - **SEO (Fase 4):** `notFound()` llamado dentro de un `<Suspense>` muestra la página 404 pero responde con código HTTP **200** (el streaming ya empezó). Revisar en las rutas de detalle (`/eventos/[id]`, etc.).
 - **Esquema (revisar):** la política `"publico ve eventos"` pasó de `using (true)` a `using (tipo <> 'reunion' or es_miembro_activo())`, para que RLS también oculte las reuniones.
+- **Decisión (revisar) · Proyectos:** `/proyectos` no tiene filtros (el §7.5 no los pide). El detalle muestra solo el enlace al repo; lenguaje, estrellas y commits llegan con la GitHub API.
+- **Decisión (revisar) · Herramientas:** `icono_url` se muestra con `next/image` `unoptimized`, porque puede venir de cualquier dominio. Sin ícono se usa uno genérico.
+- **Decisión (revisar) · Perfil público:** el perfil de un `pendiente` responde 404 (salvo para él mismo), igual que en `/miembros`. Los conteos de eventos asistidos **y** de mensajes se ocultan a visitantes y pendientes, porque RLS de `evento_asistentes` también es solo para miembros. Los repos de GitHub quedan para la Fase 3.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:

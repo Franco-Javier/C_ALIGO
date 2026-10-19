@@ -58,20 +58,22 @@ export async function getProyectoById(id: string): Promise<ProyectoConEquipo | n
 }
 
 /** Proyectos donde participa un perfil (para /perfil/[usuario]). */
-export async function getProyectosDePerfil(perfilId: string): Promise<Proyecto[]> {
+export async function getProyectosDePerfil(perfilId: string): Promise<ProyectoConEquipo[]> {
   if (isMockMode) {
     const ids = MOCK_PROYECTO_MIEMBROS.filter((m) => m.perfil_id === perfilId).map(
       (m) => m.proyecto_id,
     );
-    return MOCK_PROYECTOS.filter((p) => ids.includes(p.id));
+    return MOCK_PROYECTOS.filter((p) => ids.includes(p.id)).map(withMockEquipo);
   }
 
   const supabase = await createClient();
+  // `filtro` es un join !inner sin columnas: filtra por integrante sin recortar `miembros`.
   const { data, error } = await supabase
-    .from("proyecto_miembros")
-    .select("proyecto:proyectos(*)")
-    .eq("perfil_id", perfilId)
-    .overrideTypes<{ proyecto: Proyecto | null }[], { merge: false }>();
+    .from("proyectos")
+    .select(`${SELECT_CON_EQUIPO}, filtro:proyecto_miembros!inner()`)
+    .eq("filtro.perfil_id", perfilId)
+    .order("creado_en", { ascending: false })
+    .overrideTypes<ProyectoConEquipo[], { merge: false }>();
   throwIfError(error, "getProyectosDePerfil");
-  return (data ?? []).flatMap((row) => (row.proyecto ? [row.proyecto] : []));
+  return data ?? [];
 }

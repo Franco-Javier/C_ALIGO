@@ -1,7 +1,8 @@
 import type { AreaCarrera, Perfil, RolUsuario } from "@/types/database";
-import { MOCK_PERFILES } from "@/lib/mock";
+import { MOCK_EVENTO_ASISTENTES, MOCK_MENSAJES, MOCK_PERFILES } from "@/lib/mock";
 import { createClient } from "@/lib/supabase/server";
 import { isMockMode, throwIfError } from "./shared";
+
 
 type MiembrosFilter = { area?: AreaCarrera; rol?: RolUsuario };
 
@@ -40,4 +41,28 @@ export async function getPerfilByUsuario(usuario: string): Promise<Perfil | null
     .maybeSingle();
   throwIfError(error, "getPerfilByUsuario");
   return data;
+}
+
+export type ActividadPerfil = { eventos: number; mensajes: number };
+
+/**
+ * Eventos asistidos y mensajes enviados. RLS solo deja leer evento_asistentes
+ * y mensajes a miembros: para visitantes los conteos serían 0, así que no se piden.
+ */
+export async function getActividadDePerfil(perfilId: string): Promise<ActividadPerfil> {
+  if (isMockMode) {
+    return {
+      eventos: MOCK_EVENTO_ASISTENTES.filter((a) => a.perfil_id === perfilId).length,
+      mensajes: MOCK_MENSAJES.filter((m) => m.autor_id === perfilId).length,
+    };
+  }
+
+  const supabase = await createClient();
+  const head = { count: "exact", head: true } as const;
+  const [eventos, mensajes] = await Promise.all([
+    supabase.from("evento_asistentes").select("*", head).eq("perfil_id", perfilId),
+    supabase.from("mensajes").select("*", head).eq("autor_id", perfilId),
+  ]);
+  throwIfError(eventos.error ?? mensajes.error, "getActividadDePerfil");
+  return { eventos: eventos.count ?? 0, mensajes: mensajes.count ?? 0 };
 }
