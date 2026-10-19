@@ -494,6 +494,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
 - **Hero:** usar el logo final grande a la derecha en escritorio cuando esté listo.
 - **SEO (Fase 4):** `notFound()` llamado dentro de un `<Suspense>` muestra la página 404 pero responde con código HTTP **200** (el streaming ya empezó). Revisar en las rutas de detalle (`/eventos/[id]`, etc.).
+- **Esquema (revisar):** la política `"publico ve eventos"` pasó de `using (true)` a `using (tipo <> 'reunion' or es_miembro_activo())`, para que RLS también oculte las reuniones.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:

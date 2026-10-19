@@ -224,7 +224,8 @@ alter table noticias enable row level security;
 
 -- Público (sin login): inicio, eventos, proyectos, herramientas, noticias
 create policy "publico ve evidencias" on evidencias for select using (true);
-create policy "publico ve eventos" on eventos for select using (true);
+-- Las reuniones son internas: solo las ven los miembros que pasaron el puzzle
+create policy "publico ve eventos" on eventos for select using (tipo <> 'reunion' or es_miembro_activo());
 create policy "publico ve proyectos" on proyectos for select using (true);
 create policy "publico ve herramientas" on herramientas for select using (true);
 create policy "publico ve noticias" on noticias for select using (true);
