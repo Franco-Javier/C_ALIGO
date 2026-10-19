@@ -509,6 +509,17 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Decisión (revisar) · Admin miembros:** nadie puede cambiar **su propio** rol ni estado desde el panel, para evitar que la directiva se quede fuera por error. Se incluyen los pendientes, que se pueden activar a mano.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
+#### Checklist de integración (lo que la interfaz ya deja preparado)
+Todas las Server Actions y Route Handlers ya tienen su rama de Supabase escrita; hoy solo corre la rama mock.
+1. **Supabase:** crear el proyecto, ejecutar `supabase/schema.sql`, llenar `.env.local` y regenerar `types/database.ts` con `supabase gen types`.
+2. **Auth:** activar GitHub OAuth, configurar `NEXT_PUBLIC_SITE_URL` y crear `proxy.ts` (redirecciones del §5 + refresco de sesión). Probar `/login` → `/auth/callback` → `/puzzle` → `/perfil/editar`.
+3. **Puzzle:** definir `PUZZLE_RESPUESTA` (y `SUPABASE_SERVICE_ROLE_KEY`, que usa `/api/puzzle`).
+4. **Storage:** crear los buckets `evidencias`, `materiales` y `badges`. Subida múltiple con compresión en admin evidencias, subida de documentos en Materiales e íconos de badges.
+5. **Realtime:** activarlo en `mensajes` y suscribirse a INSERT por `hilo_id` en el chat. Presence ("En línea") en la Fase 4.
+6. **GitHub API:** `lib/github.ts` (repo + últimos 5 commits en `/proyectos/[id]`, top 4 repos en `/perfil/[usuario]`).
+7. **Cron:** `/api/cron/noticias` + `vercel.json` + `CRON_SECRET`.
+8. **Limpieza:** borrar `/dev/ui` y el panel "entrar como" de `/login` queda inactivo solo (depende del modo mock).
+
 **Trabaja una fase a la vez.** Al terminar cada una:
 1. `npm run build` sin errores.
 2. Haz un resumen de lo hecho y lo pendiente.
