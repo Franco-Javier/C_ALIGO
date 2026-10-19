@@ -1,3 +1,5 @@
+import { isUuid } from "./utils";
+
 // Lectura y validación de FormData para las Server Actions.
 // Cada lector lanza FormError con un mensaje para el usuario; la acción lo
 // convierte en { ok: false, error } con `formError()`.
@@ -43,6 +45,22 @@ export function readUrl(form: FormData, name: string, opts: TextOptions) {
   return value;
 }
 
+// Las imágenes públicas usan next/image: solo rutas locales o el Storage de Supabase
+// (los dominios permitidos en next.config).
+const IMAGE_URL = /^(\/\S+|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/\S+)$/i;
+
+export function isImageUrl(value: string) {
+  return IMAGE_URL.test(value);
+}
+
+export function readImageUrl(form: FormData, name: string, opts: TextOptions) {
+  const value = readText(form, name, { max: 1000, ...opts });
+  if (value && !isImageUrl(value)) {
+    throw new FormError(`${opts.label} debe ser una ruta local o una URL de Supabase Storage`);
+  }
+  return value;
+}
+
 /** datetime-local ("2026-10-22T14:00") interpretado en hora de Panamá (UTC-5, sin horario de verano). */
 export function readDateTime(form: FormData, name: string, opts: { label: string; required?: boolean }) {
   const value = String(form.get(name) ?? "");
@@ -53,6 +71,14 @@ export function readDateTime(form: FormData, name: string, opts: { label: string
   const date = new Date(`${value}:00-05:00`);
   if (Number.isNaN(date.getTime())) throw new FormError(`${opts.label} no es válida`);
   return date.toISOString();
+}
+
+/** Id opcional de un <select>: "" = sin vínculo. */
+export function readOptionalId(form: FormData, name: string, { label = "El vínculo" } = {}) {
+  const value = String(form.get(name) ?? "");
+  if (!value) return null;
+  if (!isUuid(value)) throw new FormError(`${label} no es válido`);
+  return value;
 }
 
 export function readCheckbox(form: FormData, name: string) {

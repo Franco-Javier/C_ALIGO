@@ -1,16 +1,11 @@
 "use server";
 
 import type { TablesInsert } from "@/types/database";
-import { FormError, readText } from "@/lib/forms";
+import { FormError, isImageUrl, readOptionalId, readText } from "@/lib/forms";
 import { MOCK_EVIDENCIAS } from "@/lib/mock";
 import { isMockMode } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-import { isUuid } from "@/lib/utils";
 import { NOT_FOUND, dbError, directivaAction, mockRemoveWhere, mockSave } from "./shared";
-
-// La galería pública usa next/image: solo rutas locales o el Storage de Supabase
-// (los dominios permitidos en next.config).
-const URL_FOTO = /^(\/\S+|https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/\S+)$/i;
 
 /**
  * Fotos: una URL por línea. Con Storage, el formulario subirá y comprimirá los
@@ -22,17 +17,9 @@ function readFotos(form: FormData) {
     .map((l) => l.trim())
     .filter(Boolean);
   if (fotos.length > 20) throw new FormError("Máximo 20 fotos por evidencia");
-  const invalida = fotos.find((f) => !URL_FOTO.test(f));
+  const invalida = fotos.find((f) => !isImageUrl(f));
   if (invalida) throw new FormError(`"${invalida}" debe ser una ruta local o una URL de Supabase Storage`);
   return fotos;
-}
-
-/** Id opcional de un <select>: "" = sin vínculo. */
-function readOptionalId(form: FormData, name: string) {
-  const value = String(form.get(name) ?? "");
-  if (!value) return null;
-  if (!isUuid(value)) throw new FormError("Vínculo no válido");
-  return value;
 }
 
 function readEvidencia(form: FormData) {
