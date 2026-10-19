@@ -278,6 +278,8 @@ Filtros: [Todos] [Workshop] [Charla] [Hackathon] [Gira] [Stand]
 - **Lee:** `eventos`, más el conteo de `evento_asistentes`.
 - **Escribe:** el miembro marca "Asistiré" con un insert en `evento_asistentes`, y lo quita con delete.
 - La etiqueta "✔ Validado UTP" se muestra solo si `validado_utp = true`.
+- **Reuniones (`tipo = 'reunion'`) son internas:** visitantes y pendientes no las ven en la lista, el Inicio, los contadores ni el detalle (404). Los miembros sí, con un chip "Reunión" extra en los filtros.
+- Quitar la asistencia requiere la política `"miembros se desinscriben"` (DELETE en `evento_asistentes`).
 - El detalle muestra la descripción, la lista de asistentes (avatares) y las evidencias vinculadas (`evidencias.evento_id`).
 
 ### 7.5 Proyectos `/proyectos` y `/proyectos/[id]`
@@ -491,6 +493,8 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Breakpoint:** la navegación de escritorio aparece desde `lg` (1024px); por debajo se usa la barra inferior.
 - **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
 - **Hero:** usar el logo final grande a la derecha en escritorio cuando esté listo.
+- **SEO (Fase 4):** `notFound()` llamado dentro de un `<Suspense>` muestra la página 404 pero responde con código HTTP **200** (el streaming ya empezó). Revisar en las rutas de detalle (`/eventos/[id]`, etc.).
+- **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:
 1. `npm run build` sin errores.

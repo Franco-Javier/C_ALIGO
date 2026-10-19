@@ -265,6 +265,7 @@ create policy "editar mi mensaje" on mensajes for update using (autor_id = auth.
 create policy "miembros ven materiales" on materiales for select using (es_miembro_activo());
 create policy "miembros suben materiales" on materiales for insert with check (es_miembro_activo() and subido_por = auth.uid());
 create policy "miembros se inscriben" on evento_asistentes for insert with check (es_miembro_activo() and perfil_id = auth.uid());
+create policy "miembros se desinscriben" on evento_asistentes for delete using (perfil_id = auth.uid());
 create policy "miembros ven asistentes" on evento_asistentes for select using (es_miembro_activo());
 
 -- Solo directiva: crear/editar contenido oficial

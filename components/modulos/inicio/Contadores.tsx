@@ -1,12 +1,17 @@
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getCurrentUser } from "@/lib/data/session";
 import { getContadores } from "@/lib/data/stats";
+import { puedeVerReuniones, viewerOf } from "@/lib/labels";
 
 const GRID = "grid grid-cols-3 gap-3";
 const ITEM =
   "flex flex-col items-center gap-1 rounded-xl border border-border bg-surface px-2 py-4 font-mono sm:flex-row sm:justify-center sm:gap-2 sm:py-5";
 
 export async function Contadores() {
-  const { miembros, proyectos, eventos } = await getContadores();
+  const user = await getCurrentUser();
+  const { miembros, proyectos, eventos } = await getContadores({
+    incluirReuniones: puedeVerReuniones(viewerOf(user)),
+  });
   const items = [
     { value: miembros, label: "miembros" },
     { value: proyectos, label: "proyectos" },

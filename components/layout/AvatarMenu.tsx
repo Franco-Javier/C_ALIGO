@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LogOut, Pencil, ShieldCheck, User } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
@@ -21,14 +20,6 @@ const ITEM =
 export function AvatarMenu({ nombre, usuarioGithub, avatarUrl, esDirectiva }: AvatarMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
-
-  // Cerrar al navegar.
-  const [lastPath, setLastPath] = useState(pathname);
-  if (pathname !== lastPath) {
-    setLastPath(pathname);
-    setOpen(false);
-  }
 
   // Cerrar con clic fuera o Escape.
   useEffect(() => {
@@ -73,7 +64,13 @@ export function AvatarMenu({ nombre, usuarioGithub, avatarUrl, esDirectiva }: Av
               <p className="truncate font-mono text-xs text-primary">@{usuarioGithub}</p>
             )}
           </div>
-          <div className="pt-1.5">
+          {/* Cerrar al elegir un enlace (la navegación no desmonta el layout). */}
+          <div
+            className="pt-1.5"
+            onClick={(e) => {
+              if ((e.target as HTMLElement).closest("a")) setOpen(false);
+            }}
+          >
             {usuarioGithub && (
               <Link role="menuitem" href={`/perfil/${usuarioGithub}`} className={ITEM}>
                 <User className="size-4" aria-hidden /> Mi perfil

@@ -45,9 +45,14 @@ export const TIPO_EVENTO_LABEL: Record<TipoEvento, string> = {
 /** Tipos que aparecen en los filtros públicos (las reuniones son internas). */
 export const TIPOS_EVENTO_FILTRO: TipoEvento[] = ["workshop", "charla", "hackathon", "gira", "stand"];
 
+/** Filtros de eventos: los miembros ven además el chip "Reunión". */
+export function tiposEventoFiltro(conReuniones: boolean): TipoEvento[] {
+  return conReuniones ? [...TIPOS_EVENTO_FILTRO, "reunion"] : TIPOS_EVENTO_FILTRO;
+}
+
 /** Valida un ?tipo= de la URL contra los tipos filtrables. */
-export function parseTipoEvento(value: unknown): TipoEvento | undefined {
-  return TIPOS_EVENTO_FILTRO.find((tipo) => tipo === value);
+export function parseTipoEvento(value: unknown, conReuniones = false): TipoEvento | undefined {
+  return tiposEventoFiltro(conReuniones).find((tipo) => tipo === value);
 }
 
 export const TIPO_MATERIAL_LABEL: Record<TipoMaterial, string> = {
@@ -66,4 +71,17 @@ export function isDirectiva(rol: RolUsuario | null | undefined) {
 /** Miembro que ya pasó el puzzle (activo o inactivo). */
 export function isMiembro(estado: EstadoUsuario | null | undefined) {
   return estado === "activo" || estado === "inactivo";
+}
+
+/** Tipo de visitante según la tabla de acceso (§5). */
+export type Viewer = "visitante" | "pendiente" | "miembro";
+
+export function viewerOf(perfil: { estado: EstadoUsuario } | null): Viewer {
+  if (!perfil) return "visitante";
+  return isMiembro(perfil.estado) ? "miembro" : "pendiente";
+}
+
+/** Las reuniones son internas: solo las ven los miembros. */
+export function puedeVerReuniones(viewer: Viewer) {
+  return viewer === "miembro";
 }

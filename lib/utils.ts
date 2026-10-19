@@ -20,6 +20,27 @@ export function formatDate(value: string | Date) {
   }).format(new Date(value));
 }
 
+/** "jueves, 22 de octubre de 2026" */
+export function formatDateLong(value: string | Date) {
+  return new Intl.DateTimeFormat("es-PA", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: TIME_ZONE,
+  }).format(new Date(value));
+}
+
+const dayKey = (value: string) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(new Date(value));
+
+/** "2:00 p. m. – 4:00 p. m.", o "hasta 22 nov 2026, 8:00 a. m." si termina otro día. */
+export function formatTimeRange(inicio: string, fin: string | null) {
+  if (!fin) return formatTime(inicio);
+  if (dayKey(inicio) === dayKey(fin)) return `${formatTime(inicio)} – ${formatTime(fin)}`;
+  return `${formatTime(inicio)}, hasta ${formatDate(fin)} ${formatTime(fin)}`;
+}
+
 /** "2:00 p. m." */
 export function formatTime(value: string | Date) {
   return new Intl.DateTimeFormat("es-PA", {
@@ -42,6 +63,13 @@ export function dateParts(value: string | Date) {
     mes: part({ month: "short" }),
     semana: part({ weekday: "short" }),
   };
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Evita mandar a Postgres un id mal formado (lanzaría error en vez de "no encontrado"). */
+export function isUuid(value: string) {
+  return UUID.test(value);
 }
 
 export function initials(name: string) {

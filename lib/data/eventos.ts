@@ -12,6 +12,8 @@ type EventosFilter = {
   tipo?: TipoEvento;
   /** Requiere la hora actual: la página que lo use debe ser dinámica (connection()). */
   cuando?: "proximos" | "pasados";
+  /** Las reuniones son internas: pasar true solo si quien mira es miembro. */
+  incluirReuniones?: boolean;
   limit?: number;
 };
 
@@ -24,6 +26,7 @@ export async function getEventos(filter: EventosFilter = {}): Promise<EventoConA
     const items = MOCK_EVENTOS.filter(
       (e) =>
         (!filter.tipo || e.tipo === filter.tipo) &&
+        (filter.incluirReuniones || e.tipo !== "reunion") &&
         (!now || (filter.cuando === "proximos" ? e.fecha_inicio >= now : e.fecha_inicio < now)),
     )
       .sort((a, b) =>
@@ -41,6 +44,7 @@ export async function getEventos(filter: EventosFilter = {}): Promise<EventoConA
   const supabase = await createClient();
   let query = supabase.from("eventos").select("*, evento_asistentes(count)");
   if (filter.tipo) query = query.eq("tipo", filter.tipo);
+  if (!filter.incluirReuniones) query = query.neq("tipo", "reunion");
   if (now) {
     query =
       filter.cuando === "proximos"
@@ -58,7 +62,24 @@ export async function getEventos(filter: EventosFilter = {}): Promise<EventoConA
   }));
 }
 
+/** IDs de los eventos a los que se inscribió un perfil. */
+export async function getAsistenciasDePerfil(perfilId: string): Promise<string[]> {
+  if (isMockMode) {
+    return MOCK_EVENTO_ASISTENTES.filter((a) => a.perfil_id === perfilId).map((a) => a.evento_id);
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("evento_asistentes")
+    .select("evento_id")
+    .eq("perfil_id", perfilId);
+  throwIfError(error, "getAsistenciasDePerfil");
+  return (data ?? []).map((a) => a.evento_id);
+}
+
 export type EventoDetalle = Evento & { asistentes: PerfilResumen[] };
+
+/** Ojo: devuelve también reuniones; la página decide si quien mira puede verlas. */
 
 export async function getEventoById(id: string): Promise<EventoDetalle | null> {
   if (isMockMode) {
