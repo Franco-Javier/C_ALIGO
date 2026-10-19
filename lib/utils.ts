@@ -65,7 +65,13 @@ export function dateParts(value: string | Date) {
   };
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** ISO → "2026-10-22T14:00" en hora de Panamá (UTC-5), para <input type="datetime-local">. */
+export function toDateTimeLocal(value: string | null | undefined) {
+  if (!value) return "";
+  return new Date(new Date(value).getTime() - 5 * 3600_000).toISOString().slice(0, 16);
+}
+
+const UUID =/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Evita mandar a Postgres un id mal formado (lanzaría error en vez de "no encontrado"). */
 export function isUuid(value: string) {
