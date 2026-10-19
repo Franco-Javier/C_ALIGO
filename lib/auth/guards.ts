@@ -37,10 +37,10 @@ export async function requireVisitante(): Promise<void> {
   if (user) redirect(isMiembro(user.estado) ? "/" : "/puzzle");
 }
 
+type UserOrError = { user: Perfil; error?: never } | { user?: never; error: string };
+
 /** Para Server Actions: mismo criterio que requireMiembro, pero devuelve un error. */
-export async function getMiembroOrError(): Promise<
-  { user: Perfil; error?: never } | { user?: never; error: string }
-> {
+export async function getMiembroOrError(): Promise<UserOrError> {
   const user = await getCurrentUser();
   if (!user) return { error: "Inicia sesión para continuar" };
   if (!isMiembro(user.estado)) return { error: "Primero resuelve el reto de ingreso" };
@@ -48,10 +48,10 @@ export async function getMiembroOrError(): Promise<
 }
 
 /** Para Server Actions del panel admin. */
-export async function getDirectivaOrError() {
+export async function getDirectivaOrError(): Promise<UserOrError> {
   const result = await getMiembroOrError();
   if (result.user && !isDirectiva(result.user.rol)) {
-    return { error: "Solo la directiva puede hacer esto" } as const;
+    return { error: "Solo la directiva puede hacer esto" };
   }
   return result;
 }
