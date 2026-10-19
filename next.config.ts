@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    // Habilita forbidden() para el 403 de /admin (§5).
+    authInterrupts: true,
   },
   cacheComponents: true,
   partialPrefetching: true,

@@ -472,7 +472,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - Crea `lib/mock/*.ts` con datos falsos realistas que usen **los mismos tipos** de `types/database.ts`. Por ejemplo, usa los foros y herramientas iniciales del `schema.sql` y 4–6 miembros de ejemplo.
 - Las funciones de `lib/data/*` deben devolver los datos mock cuando `NEXT_PUBLIC_SUPABASE_URL` esté vacío, y consultar Supabase cuando exista. Así el cambio es transparente y **las pantallas no se reescriben**.
-- Simula la sesión con una constante `MOCK_USUARIO` (rol `presidente`, estado `activo`) para poder ver todas las pantallas.
+- Simula la sesión con una constante `MOCK_USUARIO` (rol `presidente`, estado `activo`) para poder ver todas las pantallas. Para probar otros roles, usa el panel "entrar como" de `/login` (cookie `caligo_mock_session`).
 
 ---
 
@@ -498,6 +498,10 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Decisión (revisar) · Proyectos:** `/proyectos` no tiene filtros (el §7.5 no los pide). El detalle muestra solo el enlace al repo; lenguaje, estrellas y commits llegan con la GitHub API.
 - **Decisión (revisar) · Herramientas:** `icono_url` se muestra con `next/image` `unoptimized`, porque puede venir de cualquier dominio. Sin ícono se usa uno genérico.
 - **Decisión (revisar) · Perfil público:** el perfil de un `pendiente` responde 404 (salvo para él mismo), igual que en `/miembros`. Los conteos de eventos asistidos **y** de mensajes se ocultan a visitantes y pendientes, porque RLS de `evento_asistentes` también es solo para miembros. Los repos de GitHub quedan para la Fase 3.
+- **Decisión (revisar) · Sesión mock:** la cookie `caligo_mock_session` guarda el id del perfil con el que se navega (o `anon` para visitante). Sin cookie se usa `MOCK_USUARIO`. En `/login`, y solo en modo mock, hay un panel "entrar como" con los perfiles de ejemplo. "Continuar con GitHub" en mock entra como el perfil `pendiente` (Carlos).
+- **Decisión (revisar) · Datos mock compartidos:** los arrays de `lib/mock` viven en `globalThis` (`lib/mock/store.ts`), porque los Route Handlers y las páginas usan bundles distintos y no verían las mutaciones de los otros. Se pierden al reiniciar el servidor.
+- **Decisión (revisar) · Puzzle:** la respuesta se compara sin espacios, comas, corchetes ni comillas ("0, 2, 4" = "024"). En modo mock, si `PUZZLE_RESPUESTA` está vacía se usa `"0 2 4"` (`lib/mock/puzzle.ts`). Si es correcta, se va a `/perfil/editar?bienvenida=1`.
+- **Integración (Fase 2) · Acceso:** las redirecciones del §5 se hacen hoy en cada página con `lib/auth/guards.ts`. Como corren dentro de `<Suspense>`, la redirección llega por streaming con código 200. Falta el `proxy.ts` (antes `middleware.ts`), que además debe refrescar la sesión de Supabase. El 403 de `/admin` usa `forbidden()`, que requiere `experimental.authInterrupts`.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:

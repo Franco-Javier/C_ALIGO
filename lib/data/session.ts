@@ -1,15 +1,15 @@
 import { cache } from "react";
 import type { Perfil } from "@/types/database";
-import { MOCK_USUARIO } from "@/lib/mock";
+import { getMockSession } from "@/lib/mock/session";
 import { createClient } from "@/lib/supabase/server";
 import { isMockMode } from "./shared";
 
 /**
  * Perfil del usuario con sesión, o null si es visitante.
- * Con Supabase lee cookies (es dinámico): llamarlo dentro de <Suspense>.
+ * Lee cookies (también en modo mock): llamarlo dentro de <Suspense>.
  */
 export const getCurrentUser = cache(async (): Promise<Perfil | null> => {
-  if (isMockMode) return MOCK_USUARIO;
+  if (isMockMode) return getMockSession();
 
   const supabase = await createClient();
   const {

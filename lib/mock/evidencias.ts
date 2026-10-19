@@ -1,7 +1,8 @@
 import type { Evidencia } from "@/types/database";
 import { P, mockId } from "./ids";
+import { shared } from "./store";
 
-export const MOCK_EVIDENCIAS: Evidencia[] = [
+export const MOCK_EVIDENCIAS: Evidencia[] = shared("MOCK_EVIDENCIAS", () => [
   {
     id: mockId.evidencia(1),
     titulo: "Gira al centro de datos",
@@ -35,4 +36,4 @@ export const MOCK_EVIDENCIAS: Evidencia[] = [
     fecha: "2026-08-12",
     creado_en: "2026-08-12T23:00:00Z",
   },
-];
+]);

@@ -1,7 +1,8 @@
 import type { Evento, EventoAsistente } from "@/types/database";
 import { P, mockId } from "./ids";
+import { shared } from "./store";
 
-export const MOCK_EVENTOS: Evento[] = [
+export const MOCK_EVENTOS: Evento[] = shared("MOCK_EVENTOS", () => [
   {
     id: mockId.evento(1),
     titulo: "Taller de Git y GitHub",
@@ -74,9 +75,9 @@ export const MOCK_EVENTOS: Evento[] = [
     creado_por: P.francisco,
     creado_en: "2026-10-10T12:00:00Z",
   },
-];
+]);
 
-export const MOCK_EVENTO_ASISTENTES: EventoAsistente[] = [
+export const MOCK_EVENTO_ASISTENTES: EventoAsistente[] = shared("MOCK_EVENTO_ASISTENTES", () => [
   { evento_id: mockId.evento(1), perfil_id: P.francisco },
   { evento_id: mockId.evento(1), perfil_id: P.ana },
   { evento_id: mockId.evento(1), perfil_id: P.jose },
@@ -88,4 +89,4 @@ export const MOCK_EVENTO_ASISTENTES: EventoAsistente[] = [
   { evento_id: mockId.evento(4), perfil_id: P.maria },
   { evento_id: mockId.evento(5), perfil_id: P.ana },
   { evento_id: mockId.evento(5), perfil_id: P.isacar },
-];
+]);

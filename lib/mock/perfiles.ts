@@ -1,8 +1,9 @@
 import type { Perfil } from "@/types/database";
 import { P } from "./ids";
+import { shared } from "./store";
 
 // Usuarios de GitHub ficticios, salvo el de Francisco.
-export const MOCK_PERFILES: Perfil[] = [
+export const MOCK_PERFILES: Perfil[] = shared("MOCK_PERFILES", () => [
   {
     id: P.francisco,
     nombre: "Francisco Herazo",
@@ -101,7 +102,7 @@ export const MOCK_PERFILES: Perfil[] = [
     ultima_actividad: "2026-10-15T12:00:00Z",
     creado_en: "2026-10-15T12:00:00Z",
   },
-];
+]);
 
 /** Sesión simulada de la Fase 0: presidente activo, ve todas las pantallas. */
 export const MOCK_USUARIO: Perfil = MOCK_PERFILES[0]!;
