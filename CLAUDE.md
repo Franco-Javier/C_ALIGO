@@ -505,6 +505,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Decisión (revisar) · Foros:** en escritorio son 2 columnas (foros + contenido); la columna "En línea" se agrega con Presence. `/foros` muestra los foros como tarjetas, que en móvil hacen de primera pantalla. Un hilo nuevo se crea con título + primer mensaje. Enter envía y Shift+Enter hace salto de línea. Sin realtime: los mensajes de otros aparecen al recargar.
 - **Decisión (revisar) · Materiales:** la búsqueda y el tema se envían con un formulario GET; el tipo se filtra con chips. El filtro de tema lista los temas que ya existen, y al subir el tema es texto libre con sugerencias. Por ahora todo material es un **enlace**: la subida de documentos al bucket `materiales` llega con Storage.
 - **Decisión (revisar) · Admin evidencias:** sin Storage, las fotos se escriben como URLs, una por línea, y solo se aceptan rutas locales o URLs de Supabase Storage (las que `next/image` permite). La subida múltiple con compresión y el borrado de archivos del bucket llegan con la integración.
+- **Decisión (revisar) · Admin miembros:** nadie puede cambiar **su propio** rol ni estado desde el panel, para evitar que la directiva se quede fuera por error. Se incluyen los pendientes, que se pueden activar a mano.
 - **SEO (Fase 4):** el detalle de evento usa el título fijo "Evento"; falta `generateMetadata` con el título real (igual en los demás detalles).
 
 **Trabaja una fase a la vez.** Al terminar cada una:
