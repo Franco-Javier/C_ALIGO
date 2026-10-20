@@ -53,9 +53,10 @@ Estilo **oscuro, futurista y de alto contraste**, con el neón verde como protag
 | `--surface` | `#141414` | Tarjetas, sidebar |
 | `--surface-2` | `#1E1E1E` | Inputs, hover |
 | `--border` | `#2A2A2A` | Bordes |
-| `--text` | `#F5F5F5` | Texto principal |
+| `--text` | `#F4F4F4` | Texto principal (Off White de la marca) |
 | `--text-muted` | `#9A9A9A` | Texto secundario |
 | `--primary` | `#82D173` | **Verde Mantis** (logo): botones, links, acentos |
+| `--primary-deep` | `#0F1F16` | Dark Green de la marca: fondos con tinte verde |
 | `--primary-glow` | `rgba(130,209,115,0.35)` | Brillo neón (box-shadow) |
 | `--danger` | `#FF5C5C` | Errores, eliminar |
 | `--warning` | `#FFC857` | Estados pausados / pendientes |
@@ -64,13 +65,16 @@ Estilo **oscuro, futurista y de alto contraste**, con el neón verde como protag
 - **Space Grotesk**: títulos y navegación.
 - **Inter**: texto general.
 - **JetBrains Mono**: detalles "de código", como etiquetas, contadores, el puzzle y nombres de usuario de GitHub.
+- **Russo One** (`font-brand`): **solo** el logotipo "C_ALIGO" (componente `Wordmark`).
+- Etiquetas de marca: clase `.brand-label` (mono, mayúsculas, tracking amplio), como `CALIGO.LAB` o `// APRENDE`.
 
 ### Estilo de componentes
 - Bordes redondeados de `rounded-xl` en tarjetas y `rounded-lg` en botones.
 - Botón primario: fondo `--primary`, texto negro y brillo `--primary-glow` en hover.
 - Las tarjetas usan `--surface` con borde `--border`. En hover, el borde cambia a `--primary`.
 - Detalles decorativos como prefijo `>_` o `//` en títulos de sección, en mono y verde.
-- Logo: lobo/zorro en verde, blanco y negro, en `public/logo.svg` (lo proveerá el equipo; mientras tanto usa un placeholder).
+- Logo: isotipo de C angular con destello, en `public/logo.svg` y `components/ui/LogoMark.tsx` (`LogoMark` + `Wordmark`); ícono de la app en `app/icon.svg`. Lockup: isotipo | C_ALIGO / CALIGO.LAB.
+- Elementos de la marca: líneas verticales verdes junto a textos mono, cruz `+`, divisor `BrandDivider` (barra, rayas diagonales y línea fina) y los lemas "Construye. Comunica. Edifica. Lidera." y "// Aprende // Conecta // Construye". C_ALIGO significa **Comunidad de Agentes de Liderazgo y Gestión de Oportunidades** (va en el footer).
 - **Mobile first.** Todo debe verse bien desde 360px de ancho.
 
 ### Badges de estado de proyecto
@@ -92,11 +96,13 @@ c-aligo/
 ├── .env.local                    # Variables reales (NO se sube a GitHub)
 ├── vercel.json                   # Cron de noticias
 ├── supabase/
-│   └── schema.sql                # Esquema completo de la BD
+│   ├── schema.sql                # Esquema completo de la BD
+│   └── seed.sql                  # Datos de prueba opcionales (ids 5eed0000…)
 ├── public/
 │   └── logo.svg
 ├── types/
-│   └── database.ts               # Tipos TS que reflejan el esquema SQL
+│   ├── supabase.ts               # Generado con `npm run gen:types`
+│   └── database.ts               # Atajos sobre los tipos generados
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts             # Cliente para componentes "use client"
@@ -460,7 +466,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 4. **Realtime:** usa `lib/supabase/client.ts` en un componente `"use client"` y cancela la suscripción al desmontar.
 5. **Storage:** usa 3 buckets públicos de lectura: `evidencias`, `materiales` y `badges`. Nombra los archivos como `{uuid}-{nombre-limpio}`.
 6. **Imágenes:** usa `next/image` y agrega el dominio de Supabase Storage y `avatars.githubusercontent.com` en `next.config`.
-7. **Tipos:** `types/database.ts` debe reflejar exactamente `supabase/schema.sql`. Cuando exista el proyecto de Supabase, se podrán regenerar con `supabase gen types`.
+7. **Tipos:** `types/supabase.ts` es **generado** (`npx -y supabase login` una vez y luego `npm run gen:types`); no se edita a mano. Los atajos (`Perfil`, `Evento`, `EventoConAsistentes`...) viven en `types/database.ts`, que es el que se importa.
 8. **Errores:** cada Server Action devuelve `{ ok: true }` o `{ ok: false, error: string }`. Muestra los errores en un toast. Nunca dejes la pantalla en blanco.
 9. **Estados vacíos:** cada lista tiene un mensaje para cuando no hay datos, por ejemplo "// Aún no hay eventos" con un botón de acción si el usuario tiene permiso.
 10. **Carga:** usa `loading.tsx` con skeletons en cada ruta principal.
@@ -492,10 +498,11 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Mocks:** los usuarios de GitHub de María e Isacar son inventados; se reemplazan con los reales en la Fase 2.
 - **Breakpoint:** la navegación de escritorio aparece desde `lg` (1024px); por debajo se usa la barra inferior.
 - **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
-- **Hero:** usar el logo final grande a la derecha en escritorio cuando esté listo.
 - **SEO (Fase 4):** `notFound()` llamado dentro de un `<Suspense>` muestra la página 404 pero responde con código HTTP **200** (el streaming ya empezó). Revisar en las rutas de detalle (`/eventos/[id]`, etc.).
 - **Esquema (revisar):** la política `"publico ve eventos"` pasó de `using (true)` a `using (tipo <> 'reunion' or es_miembro_activo())`, para que RLS también oculte las reuniones.
 - **Esquema (revisar):** se agregó `create policy "directiva fija hilos" on hilos for update using (es_directiva());`. Sin ella, fijar un hilo desde `/admin/foros` no actualizaría nada (`hilos` no tenía política de UPDATE).
+- **Esquema (revisión previa a Supabase):** las funciones `security definer` ahora fijan `search_path = ''` y usan `public.perfiles`. Sin eso, el trigger de `auth.users` falla y el registro con GitHub da "Database error saving new user". `crear_perfil_nuevo` tiene más respaldos para `nombre`, porque GitHub puede no mandar `full_name`. El trigger de protección también bloquea `usuario_github` y `creado_en`. Se agregaron `GRANT` explícitos, índices, Realtime en `mensajes` y los 3 buckets de Storage con sus políticas de subida y borrado.
+- **Esquema (pendiente de decidir):** las FK a `perfiles` sin `on delete` (hilos, mensajes, eventos, evidencias, materiales, proyectos.responsable) impiden borrar un usuario desde el panel de Supabase. Es coherente con "nunca se elimina a un miembro", pero si alguna vez hace falta, habría que pasarlas a `on delete set null`.
 - **Decisión (revisar) · Proyectos:** `/proyectos` no tiene filtros (el §7.5 no los pide). El detalle muestra solo el enlace al repo; lenguaje, estrellas y commits llegan con la GitHub API.
 - **Decisión (revisar) · Herramientas:** `icono_url` se muestra con `next/image` `unoptimized`, porque puede venir de cualquier dominio. Sin ícono se usa uno de lucide según la categoría (`components/modulos/herramientas/CategoriaIcon.tsx`, por palabra clave; `Package` si no coincide).
 - **Decisión (revisar) · Perfil público:** el perfil de un `pendiente` responde 404 (salvo para él mismo), igual que en `/miembros`. Los conteos de eventos asistidos **y** de mensajes se ocultan a visitantes y pendientes, porque RLS de `evento_asistentes` también es solo para miembros. Los repos de GitHub quedan para la Fase 3.
@@ -514,8 +521,8 @@ Todas las Server Actions y Route Handlers ya tienen su rama de Supabase escrita;
 1. **Supabase:** crear el proyecto, ejecutar `supabase/schema.sql`, llenar `.env.local` y regenerar `types/database.ts` con `supabase gen types`.
 2. **Auth:** activar GitHub OAuth, configurar `NEXT_PUBLIC_SITE_URL` y crear `proxy.ts` (redirecciones del §5 + refresco de sesión). Probar `/login` → `/auth/callback` → `/puzzle` → `/perfil/editar`.
 3. **Puzzle:** definir `PUZZLE_RESPUESTA` (y `SUPABASE_SERVICE_ROLE_KEY`, que usa `/api/puzzle`).
-4. **Storage:** crear los buckets `evidencias`, `materiales` y `badges`. Subida múltiple con compresión en admin evidencias, subida de documentos en Materiales e íconos de badges.
-5. **Realtime:** activarlo en `mensajes` y suscribirse a INSERT por `hilo_id` en el chat. Presence ("En línea") en la Fase 4.
+4. **Storage:** los buckets y sus políticas ya los crea `schema.sql`. Falta la subida múltiple con compresión en admin evidencias, subida de documentos en Materiales e íconos de badges.
+5. **Realtime:** `schema.sql` ya agrega `mensajes` a la publicación; falta suscribirse a INSERT por `hilo_id` en el chat. Presence ("En línea") en la Fase 4.
 6. **GitHub API:** `lib/github.ts` (repo + últimos 5 commits en `/proyectos/[id]`, top 4 repos en `/perfil/[usuario]`).
 7. **Cron:** `/api/cron/noticias` + `vercel.json` + `CRON_SECRET`.
 8. **Limpieza:** borrar `/dev/ui` y el panel "entrar como" de `/login` queda inactivo solo (depende del modo mock).

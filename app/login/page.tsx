@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Suspense } from "react";
 import { MockLoginPanel } from "@/components/modulos/auth/MockLoginPanel";
 import { GithubIcon } from "@/components/ui/BrandIcons";
 import { Card } from "@/components/ui/Card";
+import { LogoMark, Wordmark } from "@/components/ui/LogoMark";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { signInWithGithub } from "@/lib/actions/auth";
@@ -40,10 +40,13 @@ export default function LoginPage(props: PageProps<"/login">) {
   return (
     <div className="flex justify-center py-6 sm:py-12">
       <Card className="flex w-full max-w-sm flex-col items-center gap-5 p-6 text-center sm:p-8">
-        <Image src="/logo.svg" alt="" width={88} height={88} priority />
-        <h1 className="font-display text-3xl font-bold">
-          <span className="font-mono text-primary">&gt;_</span> C_ALIGO
-        </h1>
+        <LogoMark className="size-20 drop-shadow-[0_0_18px_var(--primary-glow)]" />
+        <div className="flex flex-col items-center gap-2">
+          <h1 className="text-4xl">
+            <Wordmark />
+          </h1>
+          <p className="brand-label text-xs tracking-[0.45em] text-primary">caligo.lab</p>
+        </div>
         <p className="text-text-muted">Entra con tu cuenta de GitHub</p>
         <Suspense fallback={<Skeleton className="h-12 w-full" />}>
           <LoginActions {...props} />

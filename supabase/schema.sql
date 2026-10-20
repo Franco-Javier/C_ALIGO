@@ -1,6 +1,7 @@
 -- =====================================================
 -- C_ALIGO - Esquema de base de datos (Supabase / PostgreSQL)
--- Ejecutar en: Supabase > SQL Editor
+-- Ejecutar en: Supabase > SQL Editor, UNA sola vez en un proyecto limpio
+-- (no es idempotente: `create type` y los datos iniciales fallan al repetirse).
 -- =====================================================
 
 -- ---------- TIPOS ----------
@@ -167,33 +168,45 @@ create table noticias (
 -- FUNCIONES DE APOYO
 -- =====================================================
 
+-- Todas las funciones `security definer` fijan `search_path = ''` y usan nombres
+-- con esquema (public.perfiles). Así no dependen de quién las llame: el trigger de
+-- auth.users corre como supabase_auth_admin, cuyo search_path no incluye `public`.
+
 -- ¿El usuario actual es de la directiva?
-create or replace function es_directiva()
-returns boolean language sql security definer stable as $$
+create or replace function public.es_directiva()
+returns boolean language sql security definer stable set search_path = '' as $$
   select exists (
-    select 1 from perfiles
+    select 1 from public.perfiles
     where id = auth.uid() and rol in ('presidente', 'vicepresidente', 'coordinador')
   );
 $$;
 
 -- ¿El usuario actual ya pasó el puzzle?
-create or replace function es_miembro_activo()
-returns boolean language sql security definer stable as $$
+create or replace function public.es_miembro_activo()
+returns boolean language sql security definer stable set search_path = '' as $$
   select exists (
-    select 1 from perfiles
+    select 1 from public.perfiles
     where id = auth.uid() and estado in ('activo', 'inactivo')
   );
 $$;
 
--- Crear perfil automáticamente al registrarse con GitHub
-create or replace function crear_perfil_nuevo()
-returns trigger language plpgsql security definer as $$
+-- Crear perfil automáticamente al registrarse con GitHub.
+-- GitHub no siempre manda `full_name` (si el usuario no puso nombre), por eso hay
+-- varios respaldos: si `nombre` quedara null, el registro completo fallaría.
+create or replace function public.crear_perfil_nuevo()
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  insert into perfiles (id, nombre, usuario_github, avatar_url)
+  insert into public.perfiles (id, nombre, usuario_github, avatar_url)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'user_name'),
-    new.raw_user_meta_data->>'user_name',
+    coalesce(
+      new.raw_user_meta_data->>'full_name',
+      new.raw_user_meta_data->>'name',
+      new.raw_user_meta_data->>'user_name',
+      new.raw_user_meta_data->>'preferred_username',
+      'Miembro nuevo'
+    ),
+    coalesce(new.raw_user_meta_data->>'user_name', new.raw_user_meta_data->>'preferred_username'),
     new.raw_user_meta_data->>'avatar_url'
   );
   return new;
@@ -238,15 +251,18 @@ create policy "publico ve proyecto_miembros" on proyecto_miembros for select usi
 create policy "editar mi perfil" on perfiles for update using (id = auth.uid());
 create policy "directiva edita perfiles" on perfiles for update using (es_directiva());
 
--- Protección: un miembro NO puede cambiarse a sí mismo rol, estado ni puzzle.
+-- Protección: un miembro NO puede cambiarse a sí mismo rol, estado ni puzzle,
+-- ni su usuario de GitHub (es la URL pública de su perfil y viene de OAuth).
 -- Solo la directiva o el servidor (service role, donde auth.uid() es null) pueden.
-create or replace function proteger_campos_perfil()
-returns trigger language plpgsql security definer as $$
+create or replace function public.proteger_campos_perfil()
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  if auth.uid() is not null and not es_directiva() then
+  if auth.uid() is not null and not public.es_directiva() then
     new.rol := old.rol;
     new.estado := old.estado;
     new.puzzle_resuelto_en := old.puzzle_resuelto_en;
+    new.usuario_github := old.usuario_github;
+    new.creado_en := old.creado_en;
   end if;
   return new;
 end;
@@ -280,6 +296,65 @@ create policy "directiva foros" on foros for all using (es_directiva());
 create policy "directiva fija hilos" on hilos for update using (es_directiva());
 create policy "directiva herramientas" on herramientas for all using (es_directiva());
 create policy "directiva modera mensajes" on mensajes for delete using (es_directiva() or autor_id = auth.uid());
+
+-- =====================================================
+-- PERMISOS DE LA API (PostgREST)
+-- RLS decide qué filas; estos GRANT deciden qué tablas expone la API.
+-- Supabase los da por defecto en `public`, pero se dejan explícitos por si el
+-- proyecto se crea con la exposición automática desactivada.
+-- =====================================================
+grant usage on schema public to anon, authenticated;
+grant select on all tables in schema public to anon, authenticated;
+grant insert, update, delete on all tables in schema public to authenticated;
+grant execute on function public.es_directiva(), public.es_miembro_activo() to anon, authenticated;
+
+-- =====================================================
+-- ÍNDICES (llaves foráneas y columnas por las que se filtra u ordena)
+-- =====================================================
+create index on hilos (foro_id);
+create index on mensajes (hilo_id, creado_en);
+create index on mensajes (autor_id);
+create index on eventos (fecha_inicio);
+create index on evento_asistentes (perfil_id);
+create index on evidencias (fecha desc);
+create index on evidencias (evento_id);
+create index on evidencias (proyecto_id);
+create index on proyecto_miembros (perfil_id);
+create index on perfil_badges (badge_id);
+create index on badges (proyecto_id);
+create index on materiales (creado_en desc);
+create index on foros (foro_padre_id);
+create index on noticias (publicado_en desc);
+
+-- =====================================================
+-- REALTIME (§7.6): los mensajes nuevos llegan sin recargar
+-- =====================================================
+alter publication supabase_realtime add table mensajes;
+
+-- =====================================================
+-- STORAGE (§8.5): 3 buckets públicos de lectura
+-- La lectura pública no necesita política (bucket público). Subir y borrar sí.
+-- Archivos nombrados como {uuid}-{nombre-limpio}.
+-- =====================================================
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
+  ('evidencias', 'evidencias', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']),
+  ('badges', 'badges', true, 1048576, array['image/png', 'image/svg+xml', 'image/webp']),
+  ('materiales', 'materiales', true, 20971520, null)
+on conflict (id) do nothing;
+
+-- Una política por bucket (bucket_id = '...'): así el dashboard las muestra en cada bucket.
+create policy "directiva sube evidencias" on storage.objects for insert to authenticated
+  with check (bucket_id = 'evidencias' and public.es_directiva());
+create policy "directiva borra evidencias" on storage.objects for delete to authenticated
+  using (bucket_id = 'evidencias' and public.es_directiva());
+create policy "directiva sube badges" on storage.objects for insert to authenticated
+  with check (bucket_id = 'badges' and public.es_directiva());
+create policy "directiva borra badges" on storage.objects for delete to authenticated
+  using (bucket_id = 'badges' and public.es_directiva());
+create policy "miembros suben archivos de materiales" on storage.objects for insert to authenticated
+  with check (bucket_id = 'materiales' and public.es_miembro_activo());
+create policy "autor o directiva borra archivos de materiales" on storage.objects for delete to authenticated
+  using (bucket_id = 'materiales' and (owner_id = auth.uid()::text or public.es_directiva()));
 
 -- =====================================================
 -- INACTIVIDAD AUTOMÁTICA (activar extensión pg_cron en Supabase)

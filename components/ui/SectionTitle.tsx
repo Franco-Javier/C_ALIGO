@@ -19,7 +19,7 @@ export function SectionTitle({
   className,
 }: SectionTitleProps) {
   return (
-    <div className={cn("mb-4 flex items-center justify-between gap-4", className)}>
+    <div className={cn("mb-4 flex items-center gap-4", className)}>
       <Tag
         className={cn(
           "font-display font-semibold uppercase tracking-wide",
@@ -31,6 +31,8 @@ export function SectionTitle({
         </span>
         {children}
       </Tag>
+      {/* Línea fina de la marca entre el título y la acción */}
+      <span aria-hidden className="h-px min-w-4 flex-1 bg-gradient-to-r from-primary/50 to-transparent" />
       {action}
     </div>
   );
