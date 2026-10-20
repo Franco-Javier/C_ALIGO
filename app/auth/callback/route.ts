@@ -11,17 +11,35 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function GET(request: NextRequest) {
   const { origin, searchParams } = request.nextUrl;
+  const fail = () => NextResponse.redirect(`${origin}/login?error=oauth`);
 
-  if (!isMockMode) {
-    const code = searchParams.get("code");
-    if (!code) return NextResponse.redirect(`${origin}/login?error=oauth`);
-
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) return NextResponse.redirect(`${origin}/login?error=oauth`);
+  if (isMockMode) {
+    const user = await getCurrentUser();
+    if (!user) return fail();
+    return NextResponse.redirect(`${origin}${isMiembro(user.estado) ? "/" : "/puzzle"}`);
   }
 
-  const user = await getCurrentUser();
-  if (!user) return NextResponse.redirect(`${origin}/login?error=oauth`);
-  return NextResponse.redirect(`${origin}${isMiembro(user.estado) ? "/" : "/puzzle"}`);
+  // GitHub o Supabase devuelven ?error=... si el usuario cancela o falla el trigger.
+  const code = searchParams.get("code");
+  if (!code || searchParams.has("error")) {
+    console.error("[auth/callback]", searchParams.get("error_description") ?? "sin código");
+    return fail();
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error || !data.user) {
+    console.error("[auth/callback]", error?.message);
+    return fail();
+  }
+
+  // Mismo cliente: ya tiene la sesión nueva (las cookies de la request aún no).
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("estado")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (!perfil) return fail();
+
+  return NextResponse.redirect(`${origin}${isMiembro(perfil.estado) ? "/" : "/puzzle"}`);
 }

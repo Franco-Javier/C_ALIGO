@@ -5,8 +5,9 @@ import { getCurrentUser } from "@/lib/data/session";
 import { isDirectiva, isMiembro } from "@/lib/labels";
 
 // Redirecciones de la tabla de acceso (§5), hechas en el servidor al renderizar.
-// El proxy de la Fase 2 hará lo mismo antes de renderizar; la seguridad real es RLS.
-// Todas leen la sesión: llamarlas dentro de <Suspense>.
+// Con Supabase, proxy.ts ya las hace antes (307 real, lib/auth/access.ts); aquí quedan
+// como segunda capa y para el modo mock. El 403 de /admin solo se decide aquí.
+// La seguridad real es RLS. Todas leen la sesión: llamarlas dentro de <Suspense>.
 
 /** /foros, /materiales, /perfil/editar: visitante → /login, pendiente → /puzzle. */
 export async function requireMiembro(): Promise<Perfil> {
