@@ -520,7 +520,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 #### Checklist de integración (lo que la interfaz ya deja preparado)
 Todas las Server Actions y Route Handlers ya tienen su rama de Supabase escrita; hoy solo corre la rama mock.
 1. **Supabase:** crear el proyecto, ejecutar `supabase/schema.sql`, llenar `.env.local` y regenerar `types/database.ts` con `supabase gen types`.
-2. **Auth:** ✔ `proxy.ts`, callback y cierre de sesión reales. Falta probar en el navegador `/login` → GitHub → `/auth/callback` → `/puzzle` → `/perfil/editar`.
+2. **Auth:** ✔ `proxy.ts`, callback y cierre de sesión reales, probados en el navegador (login → puzzle → editar perfil → admin → cerrar sesión → volver a entrar).
 3. **Puzzle:** definir `PUZZLE_RESPUESTA` (y `SUPABASE_SERVICE_ROLE_KEY`, que usa `/api/puzzle`).
 4. **Storage:** los buckets y sus políticas ya los crea `schema.sql`. Falta la subida múltiple con compresión en admin evidencias, subida de documentos en Materiales e íconos de badges.
 5. **Realtime:** `schema.sql` ya agrega `mensajes` a la publicación; falta suscribirse a INSERT por `hilo_id` en el chat. Presence ("En línea") en la Fase 4.
