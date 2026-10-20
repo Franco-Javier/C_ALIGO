@@ -74,7 +74,7 @@ Estilo **oscuro, futurista y de alto contraste**, con el neón verde como protag
 - Las tarjetas usan `--surface` con borde `--border`. En hover, el borde cambia a `--primary`.
 - Detalles decorativos como prefijo `>_` o `//` en títulos de sección, en mono y verde.
 - Logo: isotipo de C angular con destello, en `public/logo.svg` y `components/ui/LogoMark.tsx` (`LogoMark` + `Wordmark`); ícono de la app en `app/icon.svg`. Lockup: isotipo | C_ALIGO / CALIGO.LAB.
-- Elementos de la marca: líneas verticales verdes junto a textos mono, cruz `+`, divisor `BrandDivider` (barra, rayas diagonales y línea fina) y los lemas "Construye. Comunica. Edifica. Lidera." y "// Aprende // Conecta // Construye". C_ALIGO significa **Comunidad de Agentes de Liderazgo y Gestión de Oportunidades** (va en el footer).
+- Elementos de la marca: líneas verticales verdes junto a textos mono, cruz `+`, divisor `BrandDivider` (barra, rayas diagonales y línea fina) y los lemas "Construye. Comunica. Edifica. Lidera." y "// Aprende // Conecta // Crece" (esquina del hero). C_ALIGO significa **Comunidad de Agentes de Liderazgo y Gestión de Oportunidades** (va en el footer).
 - **Mobile first.** Todo debe verse bien desde 360px de ancho.
 
 ### Badges de estado de proyecto

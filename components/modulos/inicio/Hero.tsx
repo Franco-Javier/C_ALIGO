@@ -3,7 +3,7 @@ import { BrandDivider } from "@/components/ui/BrandDivider";
 import { ButtonLink } from "@/components/ui/Button";
 import { LogoMark, Wordmark } from "@/components/ui/LogoMark";
 
-const PILARES = ["aprende", "conecta", "construye"];
+const PILARES = ["aprende", "conecta", "crece"];
 
 export function Hero() {
   return (
