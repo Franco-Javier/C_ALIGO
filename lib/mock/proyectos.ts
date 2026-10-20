@@ -8,7 +8,7 @@ export const MOCK_PROYECTOS: Proyecto[] = shared("MOCK_PROYECTOS", () => [
     nombre: "Plataforma C_ALIGO",
     descripcion: "La web de la comunidad: eventos, proyectos, foros y perfiles.",
     estado: "en_progreso",
-    repo_github: "FranciscoHerazo/c-aligo",
+    repo_github: "Franco-Javier/C_ALIGO",
     imagen_url: "/mock/proyecto-1.svg",
     responsable_id: P.francisco,
     creado_en: "2026-08-05T12:00:00Z",

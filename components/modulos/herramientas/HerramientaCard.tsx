@@ -1,8 +1,10 @@
 import Image from "next/image";
-import { Download, Wrench } from "lucide-react";
+import { Download } from "lucide-react";
 import type { Herramienta } from "@/types/database";
 import { buttonStyles } from "@/components/ui/Button";
 import { cardStyles } from "@/components/ui/Card";
+import { Tag } from "@/components/ui/Tag";
+import { CategoriaIcon } from "./CategoriaIcon";
 
 /** Toda la tarjeta es un enlace a la descarga, en una pestaña nueva (§7.8). */
 export function HerramientaCard({ herramienta }: { herramienta: Herramienta }) {
@@ -16,15 +18,20 @@ export function HerramientaCard({ herramienta }: { herramienta: Herramienta }) {
         className: "group flex h-full flex-col items-center gap-3 p-5 text-center",
       })}
     >
-      <span className="flex size-14 items-center justify-center overflow-hidden rounded-xl border border-border bg-surface-2 text-primary">
+      <span className="flex size-14 items-center justify-center overflow-hidden rounded-xl border border-border bg-surface-2 text-primary transition group-hover:shadow-glow-sm">
         {herramienta.icono_url ? (
           // unoptimized: el ícono puede venir de cualquier dominio.
           <Image src={herramienta.icono_url} alt="" width={56} height={56} unoptimized className="size-full object-contain p-2" />
         ) : (
-          <Wrench className="size-6" aria-hidden />
+          <CategoriaIcon categoria={herramienta.categoria} className="size-6" />
         )}
       </span>
       <span className="font-display font-semibold">{herramienta.nombre}</span>
+      {herramienta.categoria && (
+        <Tag prefix="// " className="max-w-full truncate">
+          {herramienta.categoria}
+        </Tag>
+      )}
       {herramienta.descripcion && (
         <span className="line-clamp-2 text-xs text-text-muted">{herramienta.descripcion}</span>
       )}

@@ -358,7 +358,7 @@ Móvil: lista de foros → lista de hilos → chat (navegación por pantallas).
 │ [Descargar]│ │ [Descargar]│ │ [Descargar]│
 └────────────┘ └────────────┘ └────────────┘
 ```
-- **Lee:** `herramientas`, agrupadas por `categoria` y ordenadas por `orden`.
+- **Lee:** `herramientas` ordenadas por `orden`, en un solo grid (2 col móvil, 3 tablet, 4 escritorio). La `categoria` va como etiqueta en cada tarjeta.
 - Toda la tarjeta es clicable y abre `url_descarga` en una pestaña nueva.
 
 ### 7.9 Noticias `/noticias` (público)
@@ -497,7 +497,7 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Esquema (revisar):** la política `"publico ve eventos"` pasó de `using (true)` a `using (tipo <> 'reunion' or es_miembro_activo())`, para que RLS también oculte las reuniones.
 - **Esquema (revisar):** se agregó `create policy "directiva fija hilos" on hilos for update using (es_directiva());`. Sin ella, fijar un hilo desde `/admin/foros` no actualizaría nada (`hilos` no tenía política de UPDATE).
 - **Decisión (revisar) · Proyectos:** `/proyectos` no tiene filtros (el §7.5 no los pide). El detalle muestra solo el enlace al repo; lenguaje, estrellas y commits llegan con la GitHub API.
-- **Decisión (revisar) · Herramientas:** `icono_url` se muestra con `next/image` `unoptimized`, porque puede venir de cualquier dominio. Sin ícono se usa uno genérico.
+- **Decisión (revisar) · Herramientas:** `icono_url` se muestra con `next/image` `unoptimized`, porque puede venir de cualquier dominio. Sin ícono se usa uno de lucide según la categoría (`components/modulos/herramientas/CategoriaIcon.tsx`, por palabra clave; `Package` si no coincide).
 - **Decisión (revisar) · Perfil público:** el perfil de un `pendiente` responde 404 (salvo para él mismo), igual que en `/miembros`. Los conteos de eventos asistidos **y** de mensajes se ocultan a visitantes y pendientes, porque RLS de `evento_asistentes` también es solo para miembros. Los repos de GitHub quedan para la Fase 3.
 - **Decisión (revisar) · Sesión mock:** la cookie `caligo_mock_session` guarda el id del perfil con el que se navega (o `anon` para visitante). Sin cookie se usa `MOCK_USUARIO`. En `/login`, y solo en modo mock, hay un panel "entrar como" con los perfiles de ejemplo. "Continuar con GitHub" en mock entra como el perfil `pendiente` (Carlos).
 - **Decisión (revisar) · Datos mock compartidos:** los arrays de `lib/mock` viven en `globalThis` (`lib/mock/store.ts`), porque los Route Handlers y las páginas usan bundles distintos y no verían las mutaciones de los otros. Se pierden al reiniciar el servidor.

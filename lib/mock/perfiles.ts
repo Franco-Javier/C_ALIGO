@@ -7,7 +7,7 @@ export const MOCK_PERFILES: Perfil[] = shared("MOCK_PERFILES", () => [
   {
     id: P.francisco,
     nombre: "Francisco Herazo",
-    usuario_github: "FranciscoHerazo",
+    usuario_github: "Franco-Javier",
     avatar_url: null,
     carrera: "Desarrollo de Software",
     area: "programacion",

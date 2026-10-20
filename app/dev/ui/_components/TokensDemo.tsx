@@ -42,7 +42,7 @@ export function TokensDemo() {
           </div>
           <div>
             <p className="mb-1 font-mono text-xs text-text-muted">JetBrains Mono · código</p>
-            <p className="font-mono text-primary">for (i = 0; i &lt; 3; i++) print(i*2) · @FranciscoHerazo</p>
+            <p className="font-mono text-primary">for (i = 0; i &lt; 3; i++) print(i*2) · @Franco-Javier</p>
           </div>
         </Card>
       </DemoSection>

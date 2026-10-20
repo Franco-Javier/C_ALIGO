@@ -4,7 +4,7 @@ import { HerramientaCard } from "@/components/modulos/herramientas/HerramientaCa
 import { EmptyState } from "@/components/ui/EmptyState";
 import { NewButton } from "@/components/ui/NewButton";
 import { SectionTitle } from "@/components/ui/SectionTitle";
-import { getHerramientas, groupByCategoria } from "@/lib/data/herramientas";
+import { getHerramientas } from "@/lib/data/herramientas";
 import { getCurrentUser } from "@/lib/data/session";
 import { isDirectiva } from "@/lib/labels";
 import { HerramientasSkeleton } from "./HerramientasSkeleton";
@@ -27,20 +27,13 @@ async function HerramientasContent() {
   }
 
   return (
-    <div className="flex flex-col gap-10">
-      {groupByCategoria(herramientas).map(({ categoria, items }) => (
-        <section key={categoria}>
-          <SectionTitle>{categoria}</SectionTitle>
-          <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {items.map((h) => (
-              <li key={h.id}>
-                <HerramientaCard herramienta={h} />
-              </li>
-            ))}
-          </ul>
-        </section>
+    <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {herramientas.map((h) => (
+        <li key={h.id}>
+          <HerramientaCard herramienta={h} />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 

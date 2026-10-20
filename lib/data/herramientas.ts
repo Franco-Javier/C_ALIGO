@@ -14,12 +14,3 @@ export async function getHerramientas(): Promise<Herramienta[]> {
   return data ?? [];
 }
 
-/** Agrupa por categoría conservando el orden de llegada. */
-export function groupByCategoria(herramientas: Herramienta[]) {
-  const groups = new Map<string, Herramienta[]>();
-  for (const h of herramientas) {
-    const key = h.categoria ?? "Otras";
-    groups.set(key, [...(groups.get(key) ?? []), h]);
-  }
-  return [...groups.entries()].map(([categoria, items]) => ({ categoria, items }));
-}
