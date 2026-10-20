@@ -497,7 +497,6 @@ Todavía no existe el proyecto en Supabase. Para avanzar con la interfaz:
 - **Redes sociales:** `lib/site.ts` tiene URLs placeholder; la comunidad aún no tiene Instagram ni organización de GitHub.
 - **Mocks:** los usuarios de GitHub de María e Isacar son inventados; se reemplazan con los reales en la Fase 2.
 - **Breakpoint:** la navegación de escritorio aparece desde `lg` (1024px); por debajo se usa la barra inferior.
-- **`/dev/ui`:** página temporal de revisión de componentes. Borrarla antes de producción.
 - **SEO (Fase 4):** `notFound()` llamado dentro de un `<Suspense>` muestra la página 404 pero responde con código HTTP **200** (el streaming ya empezó). Revisar en las rutas de detalle (`/eventos/[id]`, etc.).
 - **Esquema (revisar):** la política `"publico ve eventos"` pasó de `using (true)` a `using (tipo <> 'reunion' or es_miembro_activo())`, para que RLS también oculte las reuniones.
 - **Esquema (revisar):** se agregó `create policy "directiva fija hilos" on hilos for update using (es_directiva());`. Sin ella, fijar un hilo desde `/admin/foros` no actualizaría nada (`hilos` no tenía política de UPDATE).
@@ -526,7 +525,7 @@ Todas las Server Actions y Route Handlers ya tienen su rama de Supabase escrita;
 5. **Realtime:** `schema.sql` ya agrega `mensajes` a la publicación; falta suscribirse a INSERT por `hilo_id` en el chat. Presence ("En línea") en la Fase 4.
 6. **GitHub API:** `lib/github.ts` (repo + últimos 5 commits en `/proyectos/[id]`, top 4 repos en `/perfil/[usuario]`).
 7. **Cron:** `/api/cron/noticias` + `vercel.json` + `CRON_SECRET`.
-8. **Limpieza:** borrar `/dev/ui` y el panel "entrar como" de `/login` queda inactivo solo (depende del modo mock).
+8. **Limpieza:** ✔ `/dev/ui` borrada. El panel "entrar como" de `/login` solo aparece en modo mock, y en Vercel el modo mock está bloqueado (`lib/supabase/env.ts` hace fallar el build si faltan las variables de Supabase).
 
 **Trabaja una fase a la vez.** Al terminar cada una:
 1. `npm run build` sin errores.
